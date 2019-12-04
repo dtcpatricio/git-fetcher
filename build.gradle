@@ -1,0 +1,89 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.3.50'
+        ktlintVersion = '0.34.2'
+        springBootVersion = '2.1.7.RELEASE'
+        mockitoKotlinVersion = '2.1.0'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+apply plugin: 'java'
+
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-spring'
+apply plugin: 'kotlin-allopen'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.dtcpatricio'
+
+sourceCompatibility = 1.8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+dependencies {
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    // Spring
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
+    // Postgres
+    implementation("org.postgresql:postgresql")
+
+    // Jackson
+    implementation('com.fasterxml.jackson.module:jackson-module-kotlin')
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation('org.mockito:mockito-core')
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
+}
+
+task downloadDependenciesForDocker(type: Copy) {
+    from sourceSets.main.runtimeClasspath
+    from sourceSets.test.runtimeClasspath
+    into File.createTempDir().absolutePath
+}
+
+configurations {
+    ktlint
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    main = "com.pinterest.ktlint.Main"
+    classpath = configurations.ktlint
+    args "*/src/**/*.kt"
+}
+
+// Linter
+dependencies {
+    ktlint "com.pinterest:ktlint:${ktlintVersion}"
+}
+
+check.dependsOn ktlint

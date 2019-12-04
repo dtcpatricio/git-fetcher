@@ -42,10 +42,11 @@ class Runner(
     }
 
     private fun printCommitList(list: List<CommitInfo>) {
-        println("-- BEGIN OF COMMIT LIST --")
+        println("---- BEGIN OF COMMIT LIST -----")
         for (c in list) {
-            println("${c.timestamp} ${c.email} ${c.title}")
+            println("${c.timestamp}\n${c.email}\n${c.title}")
+            println("|")
         }
-        println("-- END OF COMMIT LIST --")
+        println("----- END OF COMMIT LIST -----")
     }
 }

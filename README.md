@@ -35,3 +35,11 @@ And start the application using Gradle Spring Boot tasks:
 ``` shell
 $ ./gradlew bootRun --args "<repo-url>"
 ```
+
+### Tests
+
+Tests can be run with the follow command, and they also require a local PostgreSQL instance for integration tests
+
+``` shell
+$ ./gradlew test
+```
